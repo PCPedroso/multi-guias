@@ -810,30 +810,31 @@ html, body {
   100% { width: 85%; }
 }
 
-/* Floating Center Reload Button (Visible only in Full Screen / Zen Mode) */
+/* Floating Center Reload Button (Visible in Full Screen / Zen Mode F10) */
 .pane-floating-reload {
   display: none !important;
   position: absolute;
-  top: 12px;
+  top: 14px;
   left: 50%;
   transform: translateX(-50%);
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-full);
-  background: rgba(15, 23, 42, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: var(--text-primary);
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 50;
-  opacity: 0.18;
-  backdrop-filter: blur(12px);
+  z-index: 10000;
+  opacity: 0.4;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
-/* Exibição apenas em modo Full Screen / Modo Imersivo */
+/* Exibição em modo Full Screen / Modo Imersivo */
 body.is-zen-mode .pane-floating-reload,
 :fullscreen .pane-floating-reload {
   display: flex !important;
@@ -841,9 +842,9 @@ body.is-zen-mode .pane-floating-reload,
 
 body.is-zen-mode .browser-pane:hover .pane-floating-reload,
 :fullscreen .browser-pane:hover .pane-floating-reload {
-  opacity: 0.55;
+  opacity: 0.75;
   background: rgba(15, 23, 42, 0.7);
-  border-color: rgba(56, 189, 248, 0.3);
+  border-color: rgba(56, 189, 248, 0.4);
 }
 
 body.is-zen-mode .pane-floating-reload:hover,
@@ -852,8 +853,8 @@ body.is-zen-mode .pane-floating-reload:hover,
   transform: translateX(-50%) scale(1.15) !important;
   background: rgba(15, 23, 42, 0.95) !important;
   border-color: var(--accent-cyan) !important;
-  color: var(--accent-cyan);
-  box-shadow: 0 0 16px var(--accent-glow), 0 4px 20px rgba(0,0,0,0.5);
+  color: var(--accent-cyan) !important;
+  box-shadow: 0 0 20px var(--accent-glow), 0 4px 24px rgba(0, 0, 0, 0.6);
 }
 
 .pane-floating-reload:active svg {
@@ -1300,30 +1301,11 @@ body.is-zen-mode .workspace-viewport {
 }
 
 body.is-zen-mode .pane-navbar {
-  display: flex !important;
-  height: 36px !important;
-  min-height: 36px !important;
-  padding: 0 10px !important;
-  background: rgba(10, 15, 29, 0.95) !important;
-  border-bottom: 1px solid var(--border-color) !important;
-  backdrop-filter: blur(12px);
-  z-index: 100;
-}
-
-body.is-zen-mode .pane-omnibox {
   display: none !important;
 }
 
-body.is-zen-mode .pane-nav-controls {
-  display: flex !important;
-}
-
-body.is-zen-mode .pane-actions {
-  display: flex !important;
-}
-
 body.is-zen-mode .pane-content-wrapper {
-  height: calc(100% - 36px) !important;
+  height: 100% !important;
 }
 
 /* Floating Exit Badge for Zen Mode */
