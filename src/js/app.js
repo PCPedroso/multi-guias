@@ -103,6 +103,7 @@ class MultiGuiasApp {
 
   syncPaneBounds() {
     if (!this.isElectron || !window.electronAPI?.updateBounds) return;
+    const isZen = document.body.classList.contains('is-zen-mode') || !!document.fullscreenElement;
     const boundsMap = {};
     this.panes.forEach(pane => {
       const wrapper = pane.element.querySelector('.pane-content-wrapper');
@@ -117,7 +118,7 @@ class MultiGuiasApp {
         visible: isVisible
       };
     });
-    window.electronAPI.updateBounds(boundsMap);
+    window.electronAPI.updateBounds({ boundsMap, isZen });
   }
 
   initSplitters() {
