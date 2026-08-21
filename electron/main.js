@@ -19,7 +19,7 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
-      webviewTag: true, // Habilita o uso de <webview partition="persist:pane-X"> para multi-sessão isolada
+      webviewTag: true,
       spellcheck: false
     }
   });
@@ -37,13 +37,25 @@ function createWindow() {
       callback(true);
     });
 
-    // Permite popups de login abrirem no mesmo contexto da partição
-    ses.setPermissionCheckHandler((webContents, permission) => {
-      return true;
+    ses.setPermissionCheckHandler(() => true);
+  });
+
+  // Garante que cada popup/janela de autenticação (ex: Google OAuth) herde estritamente a partição da sua guia
+  app.on('web-contents-created', (event, contents) => {
+    contents.setWindowOpenHandler(({ url }) => {
+      return {
+        action: 'allow',
+        overrideBrowserWindowOptions: {
+          webPreferences: {
+            session: contents.session, // Partição isolada mantida!
+            contextIsolation: true
+          }
+        }
+      };
     });
   });
 
-  // Carrega a interface
+  // Carrega a interface construída
   const isDev = process.env.NODE_ENV === 'development' || process.argv.includes('--dev');
   if (isDev) {
     mainWindow.loadURL('http://127.0.0.1:5173');
@@ -51,7 +63,7 @@ function createWindow() {
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
   }
 
-  // Remove o menu padrão do Windows para visual limpo
+  // Remove o menu padrão do Windows para visual limpo e moderno
   mainWindow.setMenuBarVisibility(false);
 
   mainWindow.on('closed', () => {
