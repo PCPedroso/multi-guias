@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron';
+const { contextBridge, ipcRenderer } = require('electron');
 
 // Expõe APIs seguras para comunicação direta entre a UI e as BrowserViews do Electron
 contextBridge.exposeInMainWorld('electronAPI', {
