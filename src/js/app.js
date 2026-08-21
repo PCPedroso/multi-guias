@@ -31,20 +31,42 @@ class MultiGuiasApp {
     this.workspacesGrid = document.getElementById('workspaces-grid');
     this.toastContainer = document.getElementById('toast-container');
 
+    const isElectron = !!(window.electronAPI?.isElectron || navigator.userAgent.includes('Electron'));
+
     // Panes instances
-    this.panes = [1, 2, 3].map(id => ({
-      id,
-      element: document.getElementById(`pane-${id}`),
-      titleEl: document.getElementById(`pane-${id}-title`),
-      inputEl: document.getElementById(`pane-${id}-input`),
-      iframeEl: document.getElementById(`pane-${id}-iframe`),
-      speedDialEl: document.getElementById(`pane-${id}-speed-dial`),
-      progressBar: document.querySelector(`#pane-${id} .pane-progress-bar`),
-      clearBtn: document.querySelector(`#pane-${id} .btn-clear-url`),
-      history: [],
-      historyIndex: -1,
-      currentUrl: ''
-    }));
+    this.panes = [1, 2, 3].map(id => {
+      let frameEl = document.getElementById(`pane-${id}-iframe`);
+
+      // No Electron, utiliza <webview> com partição de sessão 100% isolada e persistente
+      if (isElectron && frameEl && frameEl.tagName !== 'WEBVIEW') {
+        const webview = document.createElement('webview');
+        webview.className = 'pane-iframe';
+        webview.id = `pane-${id}-iframe`;
+        webview.name = `pane-frame-${id}`;
+        webview.setAttribute('partition', `persist:pane-${id}`);
+        webview.setAttribute('allowpopups', 'true');
+        webview.setAttribute('webpreferences', 'contextIsolation=yes');
+        webview.style.display = 'none';
+
+        frameEl.parentNode.replaceChild(webview, frameEl);
+        frameEl = webview;
+      }
+
+      return {
+        id,
+        isElectron,
+        element: document.getElementById(`pane-${id}`),
+        titleEl: document.getElementById(`pane-${id}-title`),
+        inputEl: document.getElementById(`pane-${id}-input`),
+        iframeEl: frameEl,
+        speedDialEl: document.getElementById(`pane-${id}-speed-dial`),
+        progressBar: document.querySelector(`#pane-${id} .pane-progress-bar`),
+        clearBtn: document.querySelector(`#pane-${id} .btn-clear-url`),
+        history: [],
+        historyIndex: -1,
+        currentUrl: ''
+      };
+    });
 
     // Renderiza speed dials e menus de presets e monitora diagnósticos
     this.panes.forEach(pane => {
@@ -192,18 +214,55 @@ class MultiGuiasApp {
     });
 
     paneEl.querySelector('.btn-nav-back').addEventListener('click', () => {
-      if (pane.historyIndex > 0) {
+      if (pane.isElectron && pane.iframeEl.canGoBack && pane.iframeEl.canGoBack()) {
+        pane.iframeEl.goBack();
+      } else if (pane.historyIndex > 0) {
         pane.historyIndex--;
         this.loadUrlInIframe(pane, pane.history[pane.historyIndex], false);
       }
     });
 
     paneEl.querySelector('.btn-nav-forward').addEventListener('click', () => {
-      if (pane.historyIndex < pane.history.length - 1) {
+      if (pane.isElectron && pane.iframeEl.canGoForward && pane.iframeEl.canGoForward()) {
+        pane.iframeEl.goForward();
+      } else if (pane.historyIndex < pane.history.length - 1) {
         pane.historyIndex++;
         this.loadUrlInIframe(pane, pane.history[pane.historyIndex], false);
       }
     });
+
+    // Eventos do Webview / Iframe
+    if (pane.isElectron) {
+      pane.iframeEl.addEventListener('did-start-loading', () => {
+        pane.progressBar.classList.add('loading');
+      });
+      pane.iframeEl.addEventListener('did-stop-loading', () => {
+        pane.progressBar.classList.remove('loading');
+      });
+      pane.iframeEl.addEventListener('page-title-updated', (e) => {
+        if (e.title) {
+          pane.titleEl.textContent = e.title.length > 25 ? e.title.substring(0, 25) + '...' : e.title;
+        }
+      });
+      pane.iframeEl.addEventListener('did-navigate', (e) => {
+        pane.currentUrl = e.url;
+        pane.inputEl.value = e.url;
+        pane.clearBtn.classList.add('has-text');
+        this.persistState();
+      });
+      pane.iframeEl.addEventListener('did-navigate-in-page', (e) => {
+        if (e.isMainFrame) {
+          pane.currentUrl = e.url;
+          pane.inputEl.value = e.url;
+          pane.clearBtn.classList.add('has-text');
+          this.persistState();
+        }
+      });
+    } else {
+      pane.iframeEl.addEventListener('load', () => {
+        pane.progressBar.classList.remove('loading');
+      });
+    }
 
     // Pop-out em nova janela
     paneEl.querySelector('.btn-popout').addEventListener('click', () => {
@@ -342,7 +401,12 @@ class MultiGuiasApp {
     // Barra de progresso animada
     pane.progressBar.classList.add('loading');
     this.diagnostics.log(`Guia ${pane.id}`, 'Navigate', `Carregando URL: ${url}`);
-    pane.iframeEl.src = url;
+    
+    if (pane.isElectron && pane.iframeEl.loadURL) {
+      pane.iframeEl.loadURL(url);
+    } else {
+      pane.iframeEl.src = url;
+    }
 
     this.persistState();
   }
@@ -351,7 +415,11 @@ class MultiGuiasApp {
     if (pane.currentUrl) {
       pane.progressBar.classList.add('loading');
       this.diagnostics.log(`Guia ${pane.id}`, 'Reload', `Recarregando URL: ${pane.currentUrl}`);
-      pane.iframeEl.src = pane.currentUrl;
+      if (pane.isElectron && pane.iframeEl.reload) {
+        pane.iframeEl.reload();
+      } else {
+        pane.iframeEl.src = pane.currentUrl;
+      }
       this.showToast(`Guia ${pane.id} recarregada`);
     }
   }

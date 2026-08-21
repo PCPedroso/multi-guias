@@ -869,6 +869,7 @@ body.is-zen-mode .pane-floating-reload:hover,
   to { transform: rotate(360deg); }
 }
 
+webview,
 .pane-iframe {
   width: 100%;
   height: 100%;

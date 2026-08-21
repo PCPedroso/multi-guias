@@ -198,22 +198,35 @@ export class ConflictDiagnostics {
   monitorPane(pane) {
     const paneName = `Guia ${pane.id}`;
 
-    // Monitora carregamento do Iframe
-    pane.iframeEl.addEventListener('load', () => {
-      let currentSrc = '';
-      try {
-        currentSrc = pane.iframeEl.contentWindow?.location?.href || pane.iframeEl.src;
-      } catch {
-        currentSrc = pane.iframeEl.src;
-      }
-      this.log(paneName, 'IframeLoad', `Iframe carregou: ${currentSrc}`);
-    });
+    // Monitora carregamento do Iframe ou Webview
+    if (pane.iframeEl.tagName === 'WEBVIEW') {
+      pane.iframeEl.addEventListener('did-start-loading', () => {
+        this.log(paneName, 'WebviewStart', `Iniciando carregamento na partição isolada persist:pane-${pane.id}`);
+      });
+      pane.iframeEl.addEventListener('did-stop-loading', () => {
+        const currentSrc = pane.iframeEl.getURL ? pane.iframeEl.getURL() : pane.iframeEl.src;
+        this.log(paneName, 'WebviewReady', `Webview carregou com sucesso: ${currentSrc}`);
+      });
+      pane.iframeEl.addEventListener('did-fail-load', (e) => {
+        this.log(paneName, 'WebviewError', `Erro ao carregar: ${e.errorDescription || 'Falha'}`, e);
+      });
+    } else {
+      pane.iframeEl.addEventListener('load', () => {
+        let currentSrc = '';
+        try {
+          currentSrc = pane.iframeEl.contentWindow?.location?.href || pane.iframeEl.src;
+        } catch {
+          currentSrc = pane.iframeEl.src;
+        }
+        this.log(paneName, 'IframeLoad', `Iframe carregou: ${currentSrc}`);
+      });
 
-    pane.iframeEl.addEventListener('error', (err) => {
-      this.log(paneName, 'IframeError', `Erro no iframe da ${paneName}`, err);
-    });
+      pane.iframeEl.addEventListener('error', (err) => {
+        this.log(paneName, 'IframeError', `Erro no iframe da ${paneName}`, err);
+      });
+    }
 
-    // Monitor de mutações no src do iframe
+    // Monitor de mutações no src
     const observer = new MutationObserver((mutations) => {
       mutations.forEach(m => {
         if (m.attributeName === 'src') {
