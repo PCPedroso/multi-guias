@@ -219,7 +219,7 @@ ipcMain.on('update-panes-bounds', (event, { boundsMap, isZen }) => {
         mainWindow.setTopBrowserView(btnView);
         btnView.setBounds({
           x: Math.max(0, Math.floor(bounds.x + bounds.width / 2 - 20)),
-          y: Math.max(0, Math.floor(bounds.y + 12)),
+          y: Math.max(0, Math.floor(bounds.y + 26)),
           width: 40,
           height: 40
         });
