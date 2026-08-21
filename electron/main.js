@@ -65,6 +65,7 @@ function createPaneView(id) {
 function createReloadButtonView(id) {
   const btnView = new BrowserView({
     webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false
     }
@@ -93,14 +94,14 @@ function createReloadButtonView(id) {
           width: 36px;
           height: 36px;
           border-radius: 50%;
-          background: rgba(15, 23, 42, 0.45);
+          background: rgba(15, 23, 42, 0.55);
           border: 1px solid rgba(255, 255, 255, 0.25);
           color: #ffffff;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          opacity: 0.45;
+          opacity: 0.6;
           backdrop-filter: blur(14px);
           -webkit-backdrop-filter: blur(14px);
           transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -108,11 +109,11 @@ function createReloadButtonView(id) {
         }
         .reload-btn:hover {
           opacity: 1;
-          transform: scale(1.15);
+          transform: scale(1.12);
           background: rgba(15, 23, 42, 0.95);
           border-color: #38bdf8;
           color: #38bdf8;
-          box-shadow: 0 0 18px rgba(56, 189, 248, 0.5), 0 4px 20px rgba(0, 0, 0, 0.6);
+          box-shadow: 0 0 18px rgba(56, 189, 248, 0.6), 0 4px 20px rgba(0, 0, 0, 0.7);
         }
         .reload-btn:active svg {
           transform: rotate(180deg);
@@ -130,7 +131,9 @@ function createReloadButtonView(id) {
       </button>
       <script>
         document.getElementById('btn-reload').addEventListener('click', () => {
-          window.location.hash = 'reload-' + Date.now();
+          if (window.electronAPI && window.electronAPI.reload) {
+            window.electronAPI.reload(${id});
+          }
         });
       </script>
     </body>
@@ -138,10 +141,6 @@ function createReloadButtonView(id) {
   `;
 
   btnView.webContents.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`);
-
-  btnView.webContents.on('did-navigate-in-page', () => {
-    paneViews[id]?.webContents.reload();
-  });
 
   return btnView;
 }
@@ -218,10 +217,10 @@ ipcMain.on('update-panes-bounds', (event, { boundsMap, isZen }) => {
         }
         mainWindow.setTopBrowserView(btnView);
         btnView.setBounds({
-          x: Math.max(0, Math.floor(bounds.x + bounds.width / 2 - 20)),
-          y: Math.max(0, Math.floor(bounds.y + 26)),
-          width: 40,
-          height: 40
+          x: Math.max(0, Math.floor(bounds.x + bounds.width - 54)),
+          y: Math.max(0, Math.floor(bounds.y + 16)),
+          width: 42,
+          height: 42
         });
       } else if (btnView) {
         if (mainWindow.getBrowserViews().includes(btnView)) {

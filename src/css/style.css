@@ -810,13 +810,14 @@ html, body {
   100% { width: 85%; }
 }
 
-/* Floating Center Reload Button (Visible in Full Screen / Zen Mode F10) */
+/* Floating Reload Button (Visible in Full Screen / Zen Mode F10) */
 .pane-floating-reload {
   display: none !important;
   position: absolute;
-  top: 26px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 16px;
+  right: 18px;
+  left: auto;
+  transform: none;
   width: 36px;
   height: 36px;
   border-radius: var(--radius-full);
@@ -850,7 +851,7 @@ body.is-zen-mode .browser-pane:hover .pane-floating-reload,
 body.is-zen-mode .pane-floating-reload:hover,
 :fullscreen .pane-floating-reload:hover {
   opacity: 1 !important;
-  transform: translateX(-50%) scale(1.15) !important;
+  transform: scale(1.15) !important;
   background: rgba(15, 23, 42, 0.95) !important;
   border-color: var(--accent-cyan) !important;
   color: var(--accent-cyan) !important;
