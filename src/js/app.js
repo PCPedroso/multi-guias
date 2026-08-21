@@ -518,6 +518,8 @@ class MultiGuiasApp {
       document.querySelectorAll('.splitter-handle').forEach(s => s.style.display = 'none');
       this.showToast(`Guia ${paneId} em foco total (Pressione Esc para sair)`);
     }
+
+    setTimeout(() => this.syncPaneBounds(), 50);
   }
 
   // =========================================================================
@@ -914,6 +916,8 @@ class MultiGuiasApp {
 
       this.showToast('Barras e painel superior restaurados');
     }
+
+    setTimeout(() => this.syncPaneBounds(), 50);
   }
 
   applyTheme(themeName) {

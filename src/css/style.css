@@ -1300,11 +1300,30 @@ body.is-zen-mode .workspace-viewport {
 }
 
 body.is-zen-mode .pane-navbar {
+  display: flex !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 10px !important;
+  background: rgba(10, 15, 29, 0.95) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  backdrop-filter: blur(12px);
+  z-index: 100;
+}
+
+body.is-zen-mode .pane-omnibox {
   display: none !important;
 }
 
+body.is-zen-mode .pane-nav-controls {
+  display: flex !important;
+}
+
+body.is-zen-mode .pane-actions {
+  display: flex !important;
+}
+
 body.is-zen-mode .pane-content-wrapper {
-  height: 100% !important;
+  height: calc(100% - 36px) !important;
 }
 
 /* Floating Exit Badge for Zen Mode */
