@@ -402,8 +402,12 @@ class MultiGuiasApp {
     pane.progressBar.classList.add('loading');
     this.diagnostics.log(`Guia ${pane.id}`, 'Navigate', `Carregando URL: ${url}`);
     
-    if (pane.isElectron && pane.iframeEl.loadURL) {
-      pane.iframeEl.loadURL(url);
+    if (pane.isElectron && pane.iframeEl.tagName === 'WEBVIEW' && typeof pane.iframeEl.loadURL === 'function') {
+      try {
+        pane.iframeEl.loadURL(url);
+      } catch {
+        pane.iframeEl.src = url;
+      }
     } else {
       pane.iframeEl.src = url;
     }
@@ -415,7 +419,7 @@ class MultiGuiasApp {
     if (pane.currentUrl) {
       pane.progressBar.classList.add('loading');
       this.diagnostics.log(`Guia ${pane.id}`, 'Reload', `Recarregando URL: ${pane.currentUrl}`);
-      if (pane.isElectron && pane.iframeEl.reload) {
+      if (pane.isElectron && pane.iframeEl.tagName === 'WEBVIEW' && typeof pane.iframeEl.reload === 'function') {
         pane.iframeEl.reload();
       } else {
         pane.iframeEl.src = pane.currentUrl;
