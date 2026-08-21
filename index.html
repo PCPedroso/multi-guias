@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Guias | Divisão de Tela Inteligente (Até 3 Guias)</title>
+  <meta name="description" content="Aplicação para divisão e visualização simultânea de até 3 guias no navegador com redimensionamento dinâmico e layouts flexíveis." />
+  
+  <!-- Fontes Google Inter e JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="./src/css/style.css" />
+</head>
+<body class="theme-dark">
+  <div id="app" class="app-container">
+    
+    <!-- Topbar de Navegação e Controles Principais -->
+    <header class="app-header" id="app-header">
+      <div class="header-left">
+        <div class="brand">
+          <div class="brand-logo">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="2"/>
+              <path d="M9 3v18"/>
+              <path d="M15 3v18"/>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h1>Multi-Guias</h1>
+            <span class="version-tag">3-SPLIT</span>
+          </div>
+        </div>
+
+        <div class="active-count-badge" id="active-count-badge" title="Guias ativas">
+          <span class="count-dot"></span>
+          <span id="active-count-text">3 Guias</span>
+        </div>
+      </div>
+
+      <!-- Seletor Rápido de Layouts -->
+      <div class="header-center">
+        <div class="layout-selector-group" role="group" aria-label="Layouts de tela">
+          
+          <button class="layout-btn" data-layout="layout-1-col" data-panes="1" title="1 Guia (Foco Total) [Alt + 1]">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+            </svg>
+            <span>1 Guia</span>
+          </button>
+
+          <div class="layout-btn-divider"></div>
+
+          <button class="layout-btn" data-layout="layout-2-cols" data-panes="2" title="2 Colunas (Lado a Lado) [Alt + 2]">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <path d="M12 3v18" />
+            </svg>
+            <span>2 Col</span>
+          </button>
+
+          <button class="layout-btn" data-layout="layout-2-rows" data-panes="2" title="2 Linhas (Horizontal)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <path d="M3 12h18" />
+            </svg>
+            <span>2 Linhas</span>
+          </button>
+
+          <div class="layout-btn-divider"></div>
+
+          <button class="layout-btn active" data-layout="layout-3-cols" data-panes="3" title="3 Colunas (33/33/33) [Alt + 3]">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <path d="M9 3v18" />
+              <path d="M15 3v18" />
+            </svg>
+            <span>3 Col</span>
+          </button>
+
+          <button class="layout-btn" data-layout="layout-1-plus-2" data-panes="3" title="1 Principal + 2 Empilhadas à Direita [Alt + 4]">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <path d="M12 3v18" />
+              <path d="M12 12h9" />
+            </svg>
+            <span>1 + 2</span>
+          </button>
+
+          <button class="layout-btn" data-layout="layout-2-plus-1" data-panes="3" title="2 Empilhadas à Esquerda + 1 Principal">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <path d="M12 3v18" />
+              <path d="M3 12h9" />
+            </svg>
+            <span>2 + 1</span>
+          </button>
+
+          <button class="layout-btn" data-layout="layout-3-rows" data-panes="3" title="3 Linhas (Horizontal)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <path d="M3 9h18" />
+              <path d="M3 15h18" />
+            </svg>
+            <span>3 Linhas</span>
+          </button>
+
+        </div>
+      </div>
+
+      <!-- Ações Gerais e Configurações -->
+      <div class="header-right">
+        
+        <button class="action-icon-btn" id="btn-equalize" title="Equalizar proporções das telas [Alt + E]">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18" />
+          </svg>
+          <span class="btn-text-sm">Equalizar</span>
+        </button>
+
+        <button class="action-icon-btn" id="btn-reload-all" title="Recarregar todas as guias ativas [Alt + R]">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+          </svg>
+        </button>
+
+        <button class="action-icon-btn" id="btn-workspaces" title="Gerenciar Setups & Workspaces">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+            <path d="M6 6h10M6 10h10"/>
+          </svg>
+          <span class="btn-text-sm">Workspaces</span>
+        </button>
+
+        <button class="action-icon-btn" id="btn-toggle-zen" title="Modo Imersivo: Ocultar Barras [F10 ou Alt + Z]">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect width="18" height="18" x="3" y="3" rx="2" />
+            <path d="M9 3v18" />
+            <path d="M15 3v18" />
+            <path d="M3 9h18" />
+            <path d="M3 15h18" />
+          </svg>
+          <span class="btn-text-sm">Imersivo (F10)</span>
+        </button>
+
+        <div class="header-divider"></div>
+
+        <button class="action-icon-btn" id="btn-theme-toggle" title="Alternar Tema (Escuro / Claro / Cyber)">
+          <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+          </svg>
+        </button>
+
+        <button class="action-icon-btn" id="btn-shortcuts" title="Atalhos do Teclado [?]">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <path d="M12 17h.01"/>
+          </svg>
+        </button>
+
+        <button class="action-icon-btn" id="btn-fullscreen" title="Tela Cheia">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+          </svg>
+        </button>
+
+      </div>
+    </header>
+
+    <!-- Área de Trabalho / Workspace dos Painéis -->
+    <main class="workspace-viewport" id="workspace-viewport">
+      <div class="split-workspace layout-3-cols" id="split-workspace">
+        
+        <!-- PAINEL 1 -->
+        <section class="browser-pane" id="pane-1" data-pane-id="1">
+          <div class="pane-navbar">
+            <div class="pane-indicator">
+              <span class="pane-badge">1</span>
+              <span class="pane-title" id="pane-1-title">Guia 1</span>
+            </div>
+
+            <div class="pane-nav-controls">
+              <button class="pane-btn btn-nav-back" title="Voltar (histórico)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              <button class="pane-btn btn-nav-forward" title="Avançar">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+              <button class="pane-btn btn-nav-reload" title="Recarregar esta guia">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              </button>
+              <button class="pane-btn btn-nav-home" title="Página Inicial / Nova Aba">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </button>
+            </div>
+
+            <div class="pane-omnibox">
+              <div class="search-engine-badge" title="Mudar motor de busca">
+                <span class="engine-icon">🌐</span>
+              </div>
+              <input type="text" class="pane-url-input" id="pane-1-input" placeholder="Digite uma URL ou termo de busca..." autocomplete="off" spellcheck="false" />
+              <button class="pane-btn btn-clear-url" title="Limpar">✕</button>
+              <button class="pane-btn btn-go-url" title="Navegar (Enter)">➔</button>
+            </div>
+
+            <div class="pane-actions">
+              <div class="dropdown-wrapper">
+                <button class="pane-btn btn-presets" title="Sites Rápidos & Favoritos">⚡</button>
+                <div class="presets-menu"></div>
+              </div>
+              <button class="pane-btn btn-popout" title="Abrir em nova janela do navegador">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </button>
+              <button class="pane-btn btn-maximize-pane" title="Maximizar esta guia (Foco temporário)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="pane-content-wrapper">
+            <button class="pane-floating-reload" id="pane-1-floating-reload" title="Recarregar esta guia">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+              </svg>
+            </button>
+            <div class="pane-progress-bar"></div>
+            <div class="pane-speed-dial" id="pane-1-speed-dial"></div>
+            <iframe class="pane-iframe" id="pane-1-iframe" name="pane-frame-1" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-presentation allow-downloads" allow="camera; microphone; display-capture; fullscreen; geolocation; autoplay; encrypted-media"></iframe>
+          </div>
+        </section>
+
+        <!-- SPLITTER 1-2 -->
+        <div class="splitter-handle splitter-1-2" id="splitter-1-2" data-direction="vertical" title="Arraste para redimensionar (Duplo clique para equalizar)">
+          <div class="splitter-bar"></div>
+        </div>
+
+        <!-- PAINEL 2 -->
+        <section class="browser-pane" id="pane-2" data-pane-id="2">
+          <div class="pane-navbar">
+            <div class="pane-indicator">
+              <span class="pane-badge">2</span>
+              <span class="pane-title" id="pane-2-title">Guia 2</span>
+            </div>
+
+            <div class="pane-nav-controls">
+              <button class="pane-btn btn-nav-back" title="Voltar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></button>
+              <button class="pane-btn btn-nav-forward" title="Avançar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></button>
+              <button class="pane-btn btn-nav-reload" title="Recarregar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg></button>
+              <button class="pane-btn btn-nav-home" title="Página Inicial"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>
+            </div>
+
+            <div class="pane-omnibox">
+              <div class="search-engine-badge" title="Mudar motor de busca">
+                <span class="engine-icon">🌐</span>
+              </div>
+              <input type="text" class="pane-url-input" id="pane-2-input" placeholder="Digite uma URL ou termo de busca..." autocomplete="off" spellcheck="false" />
+              <button class="pane-btn btn-clear-url" title="Limpar">✕</button>
+              <button class="pane-btn btn-go-url" title="Navegar (Enter)">➔</button>
+            </div>
+
+            <div class="pane-actions">
+              <div class="dropdown-wrapper">
+                <button class="pane-btn btn-presets" title="Sites Rápidos">⚡</button>
+                <div class="presets-menu"></div>
+              </div>
+              <button class="pane-btn btn-popout" title="Abrir em nova janela"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button>
+              <button class="pane-btn btn-maximize-pane" title="Maximizar esta guia"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
+            </div>
+          </div>
+
+          <div class="pane-content-wrapper">
+            <button class="pane-floating-reload" id="pane-2-floating-reload" title="Recarregar esta guia">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+              </svg>
+            </button>
+            <div class="pane-progress-bar"></div>
+            <div class="pane-speed-dial" id="pane-2-speed-dial"></div>
+            <iframe class="pane-iframe" id="pane-2-iframe" name="pane-frame-2" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-presentation allow-downloads" allow="camera; microphone; display-capture; fullscreen; geolocation; autoplay; encrypted-media"></iframe>
+          </div>
+        </section>
+
+        <!-- SPLITTER 2-3 -->
+        <div class="splitter-handle splitter-2-3" id="splitter-2-3" data-direction="vertical" title="Arraste para redimensionar (Duplo clique para equalizar)">
+          <div class="splitter-bar"></div>
+        </div>
+
+        <!-- PAINEL 3 -->
+        <section class="browser-pane" id="pane-3" data-pane-id="3">
+          <div class="pane-navbar">
+            <div class="pane-indicator">
+              <span class="pane-badge">3</span>
+              <span class="pane-title" id="pane-3-title">Guia 3</span>
+            </div>
+
+            <div class="pane-nav-controls">
+              <button class="pane-btn btn-nav-back" title="Voltar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></button>
+              <button class="pane-btn btn-nav-forward" title="Avançar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></button>
+              <button class="pane-btn btn-nav-reload" title="Recarregar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg></button>
+              <button class="pane-btn btn-nav-home" title="Página Inicial"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></button>
+            </div>
+
+            <div class="pane-omnibox">
+              <div class="search-engine-badge" title="Mudar motor de busca">
+                <span class="engine-icon">🌐</span>
+              </div>
+              <input type="text" class="pane-url-input" id="pane-3-input" placeholder="Digite uma URL ou termo de busca..." autocomplete="off" spellcheck="false" />
+              <button class="pane-btn btn-clear-url" title="Limpar">✕</button>
+              <button class="pane-btn btn-go-url" title="Navegar (Enter)">➔</button>
+            </div>
+
+            <div class="pane-actions">
+              <div class="dropdown-wrapper">
+                <button class="pane-btn btn-presets" title="Sites Rápidos">⚡</button>
+                <div class="presets-menu"></div>
+              </div>
+              <button class="pane-btn btn-popout" title="Abrir em nova janela"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button>
+              <button class="pane-btn btn-maximize-pane" title="Maximizar esta guia"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
+            </div>
+          </div>
+
+          <div class="pane-content-wrapper">
+            <button class="pane-floating-reload" id="pane-3-floating-reload" title="Recarregar esta guia">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+              </svg>
+            </button>
+            <div class="pane-progress-bar"></div>
+            <div class="pane-speed-dial" id="pane-3-speed-dial"></div>
+            <iframe class="pane-iframe" id="pane-3-iframe" name="pane-frame-3" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-presentation allow-downloads" allow="camera; microphone; display-capture; fullscreen; geolocation; autoplay; encrypted-media"></iframe>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- Modal de Workspaces / Sessões -->
+    <div class="modal-backdrop" id="modal-workspaces">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h2>🗂️ Workspaces & Sessões</h2>
+          <button class="modal-close-btn" id="btn-close-workspaces">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="workspace-save-box">
+            <input type="text" id="workspace-name-input" placeholder="Nome do Workspace (Ex: Análise Financeira)..." />
+            <button class="btn btn-primary" id="btn-save-workspace">💾 Salvar Atual</button>
+          </div>
+          <div class="workspaces-list" id="workspaces-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Atalhos de Teclado -->
+    <div class="modal-backdrop" id="modal-shortcuts">
+      <div class="modal-container">
+        <div class="modal-header">
+          <h2>⌨️ Atalhos de Teclado & Ações</h2>
+          <button class="modal-close-btn" id="btn-close-shortcuts">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="shortcuts-table">
+            <div class="shortcut-row"><span class="shortcut-key"><kbd>F10</kbd> / <kbd>Alt</kbd>+<kbd>Z</kbd></span><span><strong>Ocultar/Mostrar Barras</strong> (Painel superior e navegação)</span></div>
+            <div class="shortcut-row"><span class="shortcut-key"><kbd>F11</kbd></span><span>Tela cheia do navegador</span></div>
+            <div class="shortcut-row"><span class="shortcut-key"><kbd>Alt</kbd> + <kbd>1..4</kbd></span><span>Alternar layouts de divisão rapidamente</span></div>
+            <div class="shortcut-row"><span class="shortcut-key"><kbd>Alt</kbd> + <kbd>E</kbd></span><span>Equalizar proporções das telas (50/50 ou 33/33/33)</span></div>
+            <div class="shortcut-row"><span class="shortcut-key"><kbd>Alt</kbd> + <kbd>R</kbd></span><span>Recarregar todas as guias abertas</span></div>
+            <div class="shortcut-row"><span class="shortcut-key"><kbd>Duplo Clique</kbd></span><span>No divisor (splitter) para resetar largura proporcional</span></div>
+            <div class="shortcut-row"><span class="shortcut-key"><kbd>Esc</kbd></span><span>Sair do Modo Imersivo / Fechar modais</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Badge Flutuante de Saída do Modo Imersivo (F10) -->
+    <div class="zen-exit-pill" id="zen-exit-pill" title="Clique para restaurar as barras">
+      <span>🖥️ <strong>Barras Ocultadas</strong></span>
+      <span>Pressione <kbd>F10</kbd> ou <kbd>Esc</kbd> para restaurar</span>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+  </div>
+
+  <script type="module" src="./src/js/app.js"></script>
+</body>
+</html>
